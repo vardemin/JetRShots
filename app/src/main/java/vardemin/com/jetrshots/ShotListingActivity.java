@@ -9,10 +9,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.webkit.URLUtil;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
@@ -24,7 +22,6 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.Sort;
@@ -85,6 +82,7 @@ public class ShotListingActivity extends AppCompatActivity implements SwipeRefre
                 public void onResponse(JSONArray response) {
                     Log.d("OnJSONRequest","GOT : " + response.toString());
                     Update(ShotJSONParser.parseData(response));
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             }, new Response.ErrorListener() {
 
@@ -93,12 +91,15 @@ public class ShotListingActivity extends AppCompatActivity implements SwipeRefre
                     VolleyLog.d("JetRShots", "Error: " + error.getMessage());
                     Toast.makeText(getApplicationContext(),
                             error.getMessage(), Toast.LENGTH_SHORT).show();
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             });
             Volley.newRequestQueue(this).add(jsonArrayRequest);
         }
-        else Toast.makeText(this,R.string.check_internet_con, Toast.LENGTH_SHORT).show();
-        mSwipeRefreshLayout.setRefreshing(false);
+        else {
+            mSwipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(this,R.string.check_internet_con, Toast.LENGTH_SHORT).show(); }
+
     }
 
     /**
